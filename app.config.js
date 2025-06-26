@@ -18,7 +18,14 @@ export default {
       supportsTablet: true,
       bundleIdentifier: "com.netzero.ecodrivecoach",
       infoPlist: {
-        NSMotionUsageDescription: "EcoDrive Coach uses motion sensors to detect harsh acceleration and braking to help you drive more efficiently."
+        NSMotionUsageDescription: "EcoDrive Coach uses motion sensors to detect harsh acceleration and braking to help you drive more efficiently.",
+        LSApplicationQueriesSchemes: ["kakaonavi-sdk", "kakaokompassauth", "kakaolink"],
+        CFBundleURLTypes: [
+          {
+            CFBundleURLSchemes: [`kakao${process.env.EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY || "YOUR_KAKAO_NATIVE_APP_KEY"}`]
+          }
+        ],
+        ITSAppUsesNonExemptEncryption: false
       }
     },
     android: {
@@ -35,6 +42,7 @@ export default {
     },
     plugins: [
       "expo-router",
+      "expo-dev-client",
       [
         "expo-splash-screen",
         {

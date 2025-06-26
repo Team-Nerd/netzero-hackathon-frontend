@@ -4,6 +4,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -12,6 +14,18 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  useEffect(() => {
+    // Initialize Kakao SDK if available
+    if (Platform.OS !== 'web') {
+      try {
+        const kakaoCore = require('@react-native-kakao/core');
+        console.log('Kakao SDK available');
+      } catch (e) {
+        console.log('Kakao SDK initialization error:', e);
+      }
+    }
+  }, []);
 
   if (!loaded) {
     // Async font loading only occurs in development.
