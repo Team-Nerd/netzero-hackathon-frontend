@@ -2,8 +2,8 @@
 
 export const SENSOR_CONFIG = {
   UPDATE_INTERVAL: 100, // milliseconds
-  HARSH_THRESHOLD: 2.5, // m/s²
-  HARSH_EVENT_COOLDOWN: 2000, // milliseconds
+  HARSH_THRESHOLD: 4.5, // m/s² (approx 0.46g) - typical harsh driving threshold
+  HARSH_EVENT_COOLDOWN: 3000, // milliseconds - matches warning display duration
   ECO_SCORE_PENALTY: 5, // points deducted per harsh event
 } as const;
 
