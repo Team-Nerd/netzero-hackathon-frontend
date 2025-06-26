@@ -1,5 +1,5 @@
-import { TestNativeWind } from '@/components/TestNativeWind';
+import { SensorTestScreen } from '@/components/SensorTestScreen';
 
 export default function HomeScreen() {
-  return <TestNativeWind />;
+  return <SensorTestScreen />;
 }
