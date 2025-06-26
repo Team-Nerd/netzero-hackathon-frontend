@@ -5,50 +5,97 @@ import { Trip } from '@/types';
 import { useKeepAwake } from 'expo-keep-awake';
 
 // Conditional import for Kakao Navigation
-let navigateTo: any;
+let KakaoNaviView: any = null;
+let navigateTo: any = null;
+let isKakaoNaviAvailable = false;
+
 try {
   const kakaoNavi = require('@react-native-kakao/navi');
+  
+  console.log('Kakao Navigation module loaded successfully');
+  console.log('Available exports:', Object.keys(kakaoNavi));
+  console.log('Default export type:', typeof kakaoNavi.default);
+  console.log('Default export:', kakaoNavi.default);
+  
+  // Check if default export has any properties
+  if (kakaoNavi.default && typeof kakaoNavi.default === 'object') {
+    console.log('Default export properties:', Object.keys(kakaoNavi.default));
+  }
+  
   navigateTo = kakaoNavi.navigateTo;
+  isKakaoNaviAvailable = true;
 } catch (e) {
-  console.log('Kakao Navigation not available in Expo Go');
+  console.log('Kakao Navigation module not available:', e);
 }
 
 export function DrivingScreen() {
   const [tripActive, setTripActive] = useState(false);
   const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
-  const { isHarshEvent, currentMagnitude, ecoScore, harshEventCount, resetTrip } = useSensorMonitoring();
   const [navigationStarted, setNavigationStarted] = useState(false);
+  
+  // Initialize sensor monitoring
+  const sensorData = useSensorMonitoring();
+  const { 
+    isHarshEvent, 
+    currentAcceleration, 
+    ecoScore, 
+    harshEventCount, 
+    startMonitoring, 
+    stopMonitoring,
+    isActive 
+  } = sensorData;
+  
+  // Calculate current magnitude from acceleration data
+  const currentMagnitude = currentAcceleration 
+    ? Math.sqrt(
+        Math.pow(currentAcceleration.x, 2) + 
+        Math.pow(currentAcceleration.y, 2) + 
+        Math.pow(currentAcceleration.z, 2)
+      ) - 9.81
+    : 0;
 
   // Start navigation when component mounts
   useEffect(() => {
+    console.log('DrivingScreen mounted');
     startNavigation();
   }, []);
 
   const startNavigation = async () => {
     try {
-      if (navigateTo) {
-        // Use real Kakao Navigation in custom build
-        const result = await navigateTo({
-          destination: {
-            name: 'Seoul Station',
-            x: 126.9716173,
-            y: 37.5546995,
-          },
-        });
-        console.log('Navigation started:', result);
-        setNavigationStarted(true);
+      if (isKakaoNaviAvailable) {
+        console.log('Kakao Navigation available, checking for embedded view...');
+        
+        // Check if we need to initialize first
+        const kakaoCore = require('@react-native-kakao/core');
+        if (kakaoCore.initializeKakaoSDK) {
+          console.log('Initializing Kakao SDK...');
+          await kakaoCore.initializeKakaoSDK();
+        }
+        
+        if (KakaoNaviView) {
+          console.log('Using embedded Kakao navigation view');
+          setNavigationStarted(true);
+        } else if (navigateTo) {
+          // Only use navigateTo as fallback (this launches external app)
+          console.log('No embedded view found, would launch external Kakao app');
+          // Don't actually launch it for now
+          setNavigationStarted(true);
+        }
       } else {
-        // Mock navigation for Expo Go development
-        console.log('Using mock navigation (Expo Go)');
+        // Mock navigation for development
+        console.log('Using mock navigation (Kakao Navigation not available)');
         setNavigationStarted(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Navigation error:', error);
-      Alert.alert('Navigation Error', 'Failed to start navigation. For full functionality, create a custom development build.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      
+      // Still show the mock navigation UI even if Kakao fails
+      setNavigationStarted(true);
     }
   };
 
-  const handleStartTrip = useCallback(() => {
+  const handleStartTrip = useCallback(async () => {
     const newTrip: Trip = {
       id: Date.now().toString(),
       startTime: new Date(),
@@ -60,8 +107,8 @@ export function DrivingScreen() {
     };
     setCurrentTrip(newTrip);
     setTripActive(true);
-    resetTrip();
-  }, [resetTrip]);
+    await startMonitoring();
+  }, [startMonitoring]);
 
   const handleEndTrip = useCallback(() => {
     if (currentTrip) {
@@ -75,7 +122,8 @@ export function DrivingScreen() {
     }
     setTripActive(false);
     setCurrentTrip(null);
-  }, [currentTrip, ecoScore]);
+    stopMonitoring();
+  }, [currentTrip, ecoScore, stopMonitoring]);
 
   const formatTime = (startTime: Date) => {
     const now = new Date();
@@ -94,26 +142,47 @@ export function DrivingScreen() {
       {/* Navigation View */}
       <View className="flex-1 bg-gray-900">
         {navigationStarted ? (
-          // Mock navigation UI for development
-          <View className="flex-1">
-            {/* Mock map view */}
-            <View className="flex-1 bg-gray-800">
-              <View className="flex-1 justify-center items-center">
-                <Text className="text-gray-400 text-lg">
-                  {navigateTo ? 'Kakao Navigation Active' : 'Mock Navigation (Expo Go)'}
-                </Text>
-                <Text className="text-gray-500 text-sm mt-2">
-                  Destination: Seoul Station
-                </Text>
-              </View>
-              
-              {/* Mock navigation instructions */}
-              <View className="absolute top-20 left-4 right-4 bg-blue-600 p-4 rounded-lg">
-                <Text className="text-white text-lg font-bold">500m ahead</Text>
-                <Text className="text-white">Turn right on Sejong-daero</Text>
+          KakaoNaviView ? (
+            // Embedded Kakao Navigation View
+            <KakaoNaviView
+              style={{ flex: 1 }}
+              destination={{
+                name: 'Seoul Station',
+                x: 126.9716173,
+                y: 37.5546995,
+              }}
+              onRouteChange={(event: any) => {
+                console.log('Route changed:', event);
+              }}
+              onArrival={() => {
+                console.log('Arrived at destination');
+              }}
+            />
+          ) : (
+            // Mock navigation UI for development
+            <View className="flex-1">
+              {/* Mock map view */}
+              <View className="flex-1 bg-gray-800">
+                <View className="flex-1 justify-center items-center">
+                  <Text className="text-gray-400 text-lg">
+                    Mock Navigation View
+                  </Text>
+                  <Text className="text-gray-500 text-sm mt-2">
+                    Destination: Seoul Station
+                  </Text>
+                  <Text className="text-gray-600 text-xs mt-4">
+                    (Kakao embedded view not available)
+                  </Text>
+                </View>
+                
+                {/* Mock navigation instructions */}
+                <View className="absolute top-20 left-4 right-4 bg-blue-600 p-4 rounded-lg">
+                  <Text className="text-white text-lg font-bold">500m ahead</Text>
+                  <Text className="text-white">Turn right on Sejong-daero</Text>
+                </View>
               </View>
             </View>
-          </View>
+          )
         ) : (
           <View className="flex-1 justify-center items-center">
             <Text className="text-gray-400">Loading navigation...</Text>
