@@ -1,15 +1,20 @@
 {
   "expo": {
-    "name": "netzero-hackathon-frontend",
+    "name": "EcoDrive Coach",
     "slug": "netzero-hackathon-frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "netzerohackathonfrontend",
+    "scheme": "ecodrivecoach",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "platforms": ["ios", "android"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.netzero.ecodrivecoach",
+      "infoPlist": {
+        "NSMotionUsageDescription": "EcoDrive Coach uses motion sensors to detect harsh acceleration and braking to help you drive more efficiently."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -32,6 +37,12 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "YOUR_KAKAO_NATIVE_APP_KEY"
         }
       ]
     ],
