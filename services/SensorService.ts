@@ -81,7 +81,12 @@ export class SensorService {
    * Check if accelerometer is available
    */
   static async isAvailable(): Promise<boolean> {
-    return await Accelerometer.isAvailableAsync();
+    try {
+      return await Accelerometer.isAvailableAsync();
+    } catch (error) {
+      console.error('Error checking accelerometer availability:', error);
+      return false;
+    }
   }
   
   /**

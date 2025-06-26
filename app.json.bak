@@ -40,9 +40,22 @@
         }
       ],
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
+          }
+        }
+      ],
+      [
         "@react-native-kakao/core",
         {
-          "nativeAppKey": "YOUR_KAKAO_NATIVE_APP_KEY"
+          "nativeAppKey": "YOUR_KAKAO_NATIVE_APP_KEY",
+          "ios": {
+            "naviApplicationQuerySchemes": true
+          }
         }
       ]
     ],
