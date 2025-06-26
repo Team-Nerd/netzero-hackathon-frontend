@@ -87,10 +87,10 @@ This document outlines the phased implementation approach for the EcoDrive Coach
 **Status**: COMPLETED
 
 ### Tasks:
-1. **Kakao SDK Setup**
-   - [x] Configure Kakao native app key in `app.config.js`
+1. **Navigation SDK Setup** 
+   - [x] ~~Configure Kakao native app key~~ (Switched to Google)
    - [x] Set up iOS-specific configurations
-   - [x] Test Kakao SDK initialization
+   - [x] ~~Test Kakao SDK initialization~~ (Found limitation - external app only)
 
 2. **Replace Tab Navigation**
    - [x] Remove tab-based navigation from starter template
@@ -99,7 +99,7 @@ This document outlines the phased implementation approach for the EcoDrive Coach
 
 3. **DrivingScreen with Navigation**
    - [x] Create `app/DrivingScreen.tsx` with NativeWind styling
-   - [x] Integrate KakaoNavigation component as base layer
+   - [x] ~~Integrate KakaoNavigation~~ (Mock navigation implemented)
    - [x] Implement coaching overlay structure above navigation
    - [x] Add trip control buttons (Start/End Trip)
 
@@ -120,6 +120,47 @@ This document outlines the phased implementation approach for the EcoDrive Coach
 - ✅ Working overlay system above navigation view
 - ✅ Smooth animations and visual feedback
 - ✅ Professional appearance with map-based UI
+
+---
+
+## Phase 2.5: Google Navigation SDK Integration
+**Branch**: `feature/google-navigation`  
+**Duration**: 2-3 hours  
+**Priority**: Core UI Enhancement
+**Status**: IN PROGRESS
+
+### Rationale:
+After discovering that Kakao Navigation SDK only supports launching external apps, switching to Google Navigation SDK for true embedded navigation experience.
+
+### Tasks:
+1. **Google Maps Setup**
+   - [ ] Create Google Cloud project and enable Navigation SDK
+   - [ ] Configure API keys in app.config.js
+   - [ ] Install @googlemaps/react-native-navigation-sdk
+
+2. **Replace Mock Navigation**
+   - [ ] Remove Kakao SDK dependencies
+   - [ ] Integrate Google Navigation view component
+   - [ ] Configure navigation controller
+   - [ ] Set up route guidance callbacks
+
+3. **Update DrivingScreen**
+   - [ ] Replace mock navigation with GoogleNavigationView
+   - [ ] Ensure coaching overlay works with real navigation
+   - [ ] Test turn-by-turn guidance
+   - [ ] Verify overlay visibility during navigation
+
+4. **Navigation Features**
+   - [ ] Implement destination search
+   - [ ] Add route preferences (avoid tolls, highways)
+   - [ ] Show ETA and distance
+   - [ ] Handle navigation events (arrival, rerouting)
+
+### Deliverables:
+- Fully embedded navigation experience
+- Coaching overlay visible during navigation
+- Professional turn-by-turn guidance
+- No app switching required
 
 ---
 

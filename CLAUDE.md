@@ -57,8 +57,9 @@ Based on the PRD, the app needs to implement:
    - Eco score tracking
 
 2. **Navigation Integration**
-   - Kakao navigation for Korean roads
-   - Keep eco-coaching active during navigation
+   - Google Navigation SDK for embedded turn-by-turn navigation
+   - Eco-coaching overlay displays on top of navigation view
+   - No app switching required
 
 3. **Data Architecture**
    - Local-first with AsyncStorage
@@ -74,8 +75,7 @@ expo-keep-awake          # Keep screen active during trips
 @react-native-async-storage/async-storage  # Local data persistence
 
 # Navigation
-@react-native-kakao/core  # Kakao SDK core
-@react-native-kakao/navi  # Kakao navigation
+@googlemaps/react-native-navigation-sdk  # Google embedded navigation
 
 # Backend communication (if needed)
 axios                    # API calls
@@ -93,6 +93,7 @@ axios                    # API calls
 ### Testing
 
 Currently no testing framework is configured. If tests are needed:
+
 - Add Jest and React Native Testing Library
 - Configure test scripts in package.json
 - Set up test utilities for mocking sensors and navigation

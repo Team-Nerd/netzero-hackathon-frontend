@@ -27,13 +27,13 @@
 - Show real-time feedback overlay on screen
 - Simple eco score counter (good events vs harsh events)
 
-### Feature 2: Basic Navigation
+### Feature 2: Embedded Navigation
 
-**Primary Goal**: Integrate Kakao navigation for Korean roads
+**Primary Goal**: Integrated navigation with eco-coaching overlay
 
-- Set destination using Kakao navigation
-- Launch Kakao navigation within the app
-- Keep eco-coaching active during navigation
+- Set destination using Google Navigation SDK
+- Embedded turn-by-turn navigation within the app
+- Eco-coaching overlay stays visible on top of navigation
 
 ### Feature 3: Trip Summary
 
@@ -57,7 +57,7 @@
 # Essential only
 expo-sensors          # Accelerometer monitoring
 expo-keep-awake       # Keep screen active
-@react-native-kakao/navi  # Navigation
+@googlemaps/react-native-navigation-sdk  # Embedded navigation
 expo-haptics          # Vibration feedback
 @expo/async-storage   # Local data persistence
 axios                 # Backend API calls
