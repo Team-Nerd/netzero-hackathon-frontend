@@ -61,6 +61,7 @@ expo-keep-awake       # Keep screen active
 expo-haptics          # Vibration feedback
 @expo/async-storage   # Local data persistence
 axios                 # Backend API calls
+nativewind            # Tailwind CSS for React Native
 ```
 
 ### Simplified App Structure
@@ -196,6 +197,14 @@ interface TripSummary {
 
 ## 5. Single Screen App Architecture
 
+### UI Styling with NativeWind
+
+**Why NativeWind**: 
+- Rapid UI development with Tailwind utility classes
+- Consistent styling across components
+- Responsive design out of the box
+- Familiar to web developers
+
 ### Main Screen: DrivingScreen.tsx
 
 **Layout**:
@@ -212,7 +221,7 @@ interface TripSummary {
 
 ### Coaching Feedback (Immediate)
 
-- **Visual**: Red flash overlay for harsh events
+- **Visual**: Red flash overlay for harsh events (styled with NativeWind)
 - **Haptic**: Phone vibration
 - **Text**: Simple message "Gentler braking saves fuel!"
 
@@ -226,20 +235,25 @@ npx create-expo-app netzero-hackathon-frontend
 
 // 2. Install dependencies (local-first)
 npx expo install expo-sensors expo-keep-awake expo-haptics @expo/async-storage
-npm install @react-native-kakao/core @react-native-kakao/navi axios
+npm install @react-native-kakao/core @react-native-kakao/navi axios nativewind
+npm install -D tailwindcss
 
-// 3. Build core with local storage
+// 3. Configure NativeWind
+npx tailwindcss init
+
+// 4. Build core with local storage
 // - Sensor monitoring with local trip saving
 // - Basic Kakao navigation integration
 // - Trip history stored in AsyncStorage
+// - UI styled with NativeWind/Tailwind classes
 ```
 
 ### Phase 2 (3-4 hours): UI + Local Features
 
-- Complete DrivingScreen with coaching overlay
-- Trip summary modal with local data
+- Complete DrivingScreen with coaching overlay styled with NativeWind
+- Trip summary modal with NativeWind styling
 - Basic trip history from AsyncStorage
-- Polish for standalone demo
+- Polish UI with Tailwind utility classes for rapid development
 
 ### Phase 3 (2-4 hours): Backend Integration (If Ready)
 
@@ -271,7 +285,7 @@ export default function App() {
 }
 ```
 
-### DrivingScreen.tsx (Single Main Screen)
+### DrivingScreen.tsx (Single Main Screen with NativeWind)
 
 ```typescript
 import React, { useState } from 'react';
@@ -296,16 +310,30 @@ export default function DrivingScreen() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       {/* Kakao Map View */}
-      <KakaoNavigation style={{ flex: 1 }} />
+      <KakaoNavigation className="flex-1" />
       
       {/* Coaching Overlay */}
       {isTripActive && (
-        <View style={overlayStyles}>
-          <Text>Eco Score: {ecoScore}</Text>
+        <View className="absolute top-0 left-0 right-0 p-4 bg-black/50">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-white text-lg font-semibold">
+              Eco Score: {ecoScore}
+            </Text>
+            <View className="bg-green-500 px-3 py-1 rounded-full">
+              <Text className="text-white font-bold">{harshEvents} events</Text>
+            </View>
+          </View>
+          
           {isHarshEvent && (
-            <Text style={alertStyle}>Gentler driving saves fuel! 🌱</Text>
+            <View className="absolute inset-0 bg-red-500/30 items-center justify-center">
+              <View className="bg-red-600 px-6 py-3 rounded-lg">
+                <Text className="text-white text-xl font-bold">
+                  Gentler driving saves fuel! 🌱
+                </Text>
+              </View>
+            </View>
           )}
         </View>
       )}
@@ -313,9 +341,13 @@ export default function DrivingScreen() {
       {/* Trip Controls */}
       <TouchableOpacity 
         onPress={isTripActive ? endTrip : startTrip}
-        style={buttonStyle}
+        className={`absolute bottom-8 self-center px-8 py-4 rounded-full ${
+          isTripActive ? 'bg-red-500' : 'bg-green-500'
+        }`}
       >
-        <Text>{isTripActive ? 'End Trip' : 'Start Eco Trip'}</Text>
+        <Text className="text-white text-lg font-bold">
+          {isTripActive ? 'End Trip' : 'Start Eco Trip'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -497,6 +529,31 @@ export function useSensorMonitoring(isActive: boolean) {
 **For Judges**: "Our app works offline-first for reliability, but syncs to backend for social features - shows both immediate user value and scalable architecture"
 
 ## 9. Hackathon Configuration
+
+### NativeWind Setup
+
+**tailwind.config.js**:
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+**babel.config.js** (add NativeWind plugin):
+```javascript
+module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: ["nativewind/babel"],
+  };
+};
+```
 
 ### app.json (Minimal)
 
